@@ -7,17 +7,13 @@ class LogicScorer:
     """
     Evaluates logic puzzles by checking for both the correct final answer
     AND the presence of necessary reasoning steps.
-    
+
     Ref: [2504.04823] Q-Hurts-Reasoning
     """
 
-    def __init__(
-        self, expected_answer: str, required_reasoning: list[str] | None = None
-    ):
+    def __init__(self, expected_answer: str, required_reasoning: list[str] | None = None):
         self.expected_answer = expected_answer.lower()
-        self.required_reasoning = [
-            r.lower() for r in (required_reasoning or [])
-        ]
+        self.required_reasoning = [r.lower() for r in (required_reasoning or [])]
 
     def score(self, response: str) -> float:
         """Return 1.0 if answer and reasoning correct, 0.0 otherwise."""
@@ -42,9 +38,7 @@ class LogicScorer:
         response_lower = response.lower()
         has_answer = self.expected_answer in response_lower
 
-        missing_steps = [
-            step for step in self.required_reasoning if step not in response_lower
-        ]
+        missing_steps = [step for step in self.required_reasoning if step not in response_lower]
 
         reasoning_score = (
             1.0 - (len(missing_steps) / len(self.required_reasoning))

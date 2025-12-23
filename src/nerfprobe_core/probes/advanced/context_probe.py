@@ -8,7 +8,6 @@ import random
 import string
 import time
 from dataclasses import dataclass
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -23,6 +22,7 @@ from nerfprobe_core.probes.config import ContextProbeConfig
 @dataclass
 class ReasoningNeedle:
     """A reasoning task embedded in context."""
+
     premise_1: str
     premise_2: str
     question: str
@@ -32,6 +32,7 @@ class ReasoningNeedle:
 @dataclass
 class ContextScore:
     """Score result for context analysis."""
+
     value: float
     passed: bool
     reason: str
@@ -48,7 +49,7 @@ class ContextScorer:
     def score(self, results: dict[float, bool]) -> ContextScore:
         """
         Evaluate depth results for KV cache compression artifacts.
-        
+
         Args:
             results: Dictionary mapping depth (0.1, 0.5, 0.9) to success
         """
@@ -166,7 +167,7 @@ class ContextProbe:
             )
 
             prompt = f"""Context:
-{' '.join(context_tokens)}
+{" ".join(context_tokens)}
 
 Question: {needle.question}
 Answer:"""

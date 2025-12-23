@@ -7,7 +7,7 @@ from typing import Any
 class CalibrationScorer:
     """
     Evaluates verbalized confidence against correctness.
-    
+
     Ref: [2511.07585]
     """
 
@@ -44,9 +44,7 @@ class CalibrationScorer:
         Looks for patterns like 'Confidence: 0.95' or '95%'.
         """
         # Pattern: "Confidence: 0.95" or "confidence: 95%"
-        match = re.search(
-            r"confidence[:\s]+([\d.]+)%?", response, re.IGNORECASE
-        )
+        match = re.search(r"confidence[:\s]+([\d.]+)%?", response, re.IGNORECASE)
         if match:
             value = float(match.group(1))
             # Normalize percentage to 0-1 scale

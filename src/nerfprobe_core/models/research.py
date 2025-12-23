@@ -7,12 +7,10 @@ models not in the bundled registry.
 
 import json
 from datetime import date
-from typing import Any
 
 from nerfprobe_core.models import ModelInfo
 
-
-RESEARCH_PROMPT = '''Research the following specifications for the AI model "{model_name}" by {provider}:
+RESEARCH_PROMPT = """Research the following specifications for the AI model "{model_name}" by {provider}:  # noqa: E501
 
 Fields needed (for probe testing):
 1. context_window - Maximum input tokens supported
@@ -38,13 +36,13 @@ Return ONLY a JSON object with this exact format:
 }}
 
 If a field is unknown, use null. Do not estimate or make up values.
-'''
+"""
 
 
 def get_research_prompt(model_name: str, provider: str) -> str:
     """
     Generate a research prompt for an unknown model.
-    
+
     Usage:
         prompt = get_research_prompt("qwen3", "alibaba")
         # Paste into any LLM (ChatGPT, Claude, Gemini, etc.)
@@ -60,12 +58,12 @@ def parse_research_response(
 ) -> ModelInfo | None:
     """
     Parse an LLM research response into ModelInfo.
-    
+
     Args:
         model_id: The model identifier
         provider: Provider name
         json_response: Raw JSON string from LLM
-    
+
     Returns:
         ModelInfo if parsing succeeds, None otherwise
     """
@@ -76,9 +74,9 @@ def parse_research_response(
             content = content.split("```json")[1].split("```")[0]
         elif "```" in content:
             content = content.split("```")[1].split("```")[0]
-        
+
         data = json.loads(content.strip())
-        
+
         # Parse knowledge_cutoff date
         knowledge_cutoff = None
         if data.get("knowledge_cutoff"):
@@ -86,7 +84,7 @@ def parse_research_response(
                 knowledge_cutoff = date.fromisoformat(data["knowledge_cutoff"])
             except ValueError:
                 pass
-        
+
         return ModelInfo(
             id=model_id,
             provider=provider,

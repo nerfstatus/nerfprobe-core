@@ -6,7 +6,6 @@ Ref: [2407.15847] LLMmap
 
 import time
 from dataclasses import dataclass
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -21,6 +20,7 @@ from nerfprobe_core.probes.config import FingerprintProbeConfig
 @dataclass
 class FingerprintScore:
     """Score result for fingerprint analysis."""
+
     value: float
     passed: bool
     reason: str
@@ -77,9 +77,7 @@ class FingerprintScorer:
             else 1.0
         )
         identity_score = (
-            1.0 - (float(identity_leaked) / len(banner_responses))
-            if banner_responses
-            else 1.0
+            1.0 - (float(identity_leaked) / len(banner_responses)) if banner_responses else 1.0
         )
 
         combined_score = (malformed_score + identity_score) / 2.0
@@ -88,7 +86,10 @@ class FingerprintScorer:
         return FingerprintScore(
             value=combined_score,
             passed=passed,
-            reason=f"Frameworks Detected: {list(detected_frameworks)}, Identity Leaks: {identity_leaked}/{len(banner_responses)}",
+            reason=(
+                f"Frameworks Detected: {list(detected_frameworks)}, "
+                f"Identity Leaks: {identity_leaked}/{len(banner_responses)}"
+            ),
             detected_frameworks=list(detected_frameworks),
             malformed_robustness=malformed_score,
             identity_privacy=identity_score,

@@ -1,54 +1,53 @@
 """Probes module - organized by tier."""
 
+# Advanced tier probes
+from nerfprobe_core.probes.advanced import (
+    ChainOfThoughtProbe,
+    ConstraintProbe,
+    ContextProbe,
+    FingerprintProbe,
+    LogicProbe,
+    RepetitionProbe,
+    RoutingProbe,
+)
 from nerfprobe_core.probes.config import (
     # Base
     BaseProbeConfig,
-    # Core tier
-    MathProbeConfig,
-    StyleProbeConfig,
-    TimingProbeConfig,
-    CodeProbeConfig,
-    # Advanced tier
-    FingerprintProbeConfig,
-    ContextProbeConfig,
-    RoutingProbeConfig,
-    RepetitionProbeConfig,
-    ConstraintProbeConfig,
-    LogicPuzzleProbeConfig,
-    ChainOfThoughtProbeConfig,
     # Optional tier
     CalibrationProbeConfig,
-    ZeroPrintProbeConfig,
-    MultilingualProbeConfig,
+    ChainOfThoughtProbeConfig,
+    CodeProbeConfig,
     # Utility
     ComparisonProbeConfig,
+    ConstraintProbeConfig,
+    ContextProbeConfig,
     FactProbeConfig,
+    # Advanced tier
+    FingerprintProbeConfig,
+    LogicPuzzleProbeConfig,
+    # Core tier
+    MathProbeConfig,
+    MultilingualProbeConfig,
+    RepetitionProbeConfig,
+    RoutingProbeConfig,
+    StyleProbeConfig,
+    TimingProbeConfig,
+    ZeroPrintProbeConfig,
 )
 
 # Core tier probes
 from nerfprobe_core.probes.core import (
+    CodeProbe,
     MathProbe,
     StyleProbe,
     TimingProbe,
-    CodeProbe,
-)
-
-# Advanced tier probes
-from nerfprobe_core.probes.advanced import (
-    FingerprintProbe,
-    ContextProbe,
-    RoutingProbe,
-    RepetitionProbe,
-    ConstraintProbe,
-    LogicProbe,
-    ChainOfThoughtProbe,
 )
 
 # Optional tier probes
 from nerfprobe_core.probes.optional import (
     CalibrationProbe,
-    ZeroPrintProbe,
     MultilingualProbe,
+    ZeroPrintProbe,
 )
 
 # Tier definitions for CLI --tier flag

@@ -10,7 +10,7 @@ class ChainOfThoughtScorer:
     Checks for:
     1. Step count (depth)
     2. Circularity (repetitive steps)
-    
+
     Ref: [2504.04823]
     """
 
@@ -65,9 +65,7 @@ class ChainOfThoughtScorer:
 
         def clean_step(s: str) -> str:
             # Remove "Step N" or "N." prefix
-            s = re.sub(
-                r"^(step\s*\d+[:\.]?|\d+[\.:])","",s,flags=re.IGNORECASE
-            ).strip()
+            s = re.sub(r"^(step\s*\d+[:\.]?|\d+[\.:])", "", s, flags=re.IGNORECASE).strip()
             return s.lower()
 
         cleaned_steps = [clean_step(s) for s in steps]

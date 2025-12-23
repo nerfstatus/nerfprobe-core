@@ -8,7 +8,7 @@ class CodeScorer:
     """
     Validates code syntax using Python's AST parser.
     Pure logic component with no external dependencies.
-    
+
     Ref: [2512.08213] Package Hallucinations.
     """
 

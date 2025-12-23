@@ -8,17 +8,17 @@ from typing import Any
 class EntropyScorer:
     """
     Calculates Shannon Entropy of a distribution of responses.
-    
+
     Ref: [2407.01235] LLM Fingerprinting
     """
 
     def score(self, responses: list[str]) -> float:
         """
         Calculate entropy of response distribution.
-        
+
         Args:
             responses: List of response strings
-        
+
         Returns:
             Shannon entropy value
         """

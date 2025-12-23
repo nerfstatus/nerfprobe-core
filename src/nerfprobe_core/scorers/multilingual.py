@@ -6,7 +6,7 @@ from typing import Any
 class MultilingualScorer:
     """
     Evaluates responses across multiple languages.
-    
+
     Ref: [2024.findings-emnlp.935]
     """
 
@@ -17,10 +17,10 @@ class MultilingualScorer:
     def score(self, responses: dict[str, str]) -> float:
         """
         Calculate consistency score across languages.
-        
+
         Args:
             responses: Dict mapping language code to response text
-        
+
         Returns:
             Percentage of languages that passed
         """

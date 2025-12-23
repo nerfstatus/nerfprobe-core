@@ -7,7 +7,7 @@ class TTRScorer:
     """
     Calculates Type-Token Ratio (TTR) to detect vocabulary degradation.
     Pure logic component with no external dependencies.
-    
+
     Ref: [2403.06408] Perturbation Lens.
     """
 
@@ -25,7 +25,7 @@ class TTRScorer:
     def score(self, response: str) -> float:
         """Return the min local TTR if windowing used, else global TTR."""
         metrics = self.metrics(response)
-        return metrics.get("min_local_ttr", metrics["ttr"])
+        return float(metrics.get("min_local_ttr", metrics["ttr"]))
 
     def metrics(self, response: str) -> dict[str, Any]:
         """Return detailed TTR metrics including local window analysis."""

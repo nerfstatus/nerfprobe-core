@@ -6,7 +6,6 @@ Ref: [2406.18665] RouteLLM
 
 import time
 from dataclasses import dataclass
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -21,6 +20,7 @@ from nerfprobe_core.probes.config import RoutingProbeConfig
 @dataclass
 class RoutingScore:
     """Score result for routing analysis."""
+
     value: float
     passed: bool
     reason: str
@@ -126,9 +126,7 @@ class RoutingProbe:
                 hard_results.append(False)
 
         latency_ms = (time.perf_counter() - start) * 1000
-        score = self._scorer.score(
-            easy_results, hard_results, self._config.baseline_gap_threshold
-        )
+        score = self._scorer.score(easy_results, hard_results, self._config.baseline_gap_threshold)
 
         return ProbeResult(
             probe_name=self._config.name,

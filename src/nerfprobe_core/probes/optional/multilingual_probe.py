@@ -5,7 +5,6 @@ Ref: [2024.findings-emnlp.935]
 """
 
 import time
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -16,7 +15,6 @@ from nerfprobe_core.core import (
 )
 from nerfprobe_core.probes.config import MultilingualProbeConfig
 from nerfprobe_core.scorers.multilingual import MultilingualScorer
-
 
 # Language name mapping
 LANG_NAMES: dict[str, str] = {

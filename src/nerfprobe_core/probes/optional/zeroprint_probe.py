@@ -6,7 +6,6 @@ Requires: Multiple sampling iterations.
 """
 
 import time
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -48,13 +47,10 @@ class ZeroPrintProbe:
         for _ in range(self.config.iterations):
             try:
                 # Try logprobs if required and supported
-                if (
-                    getattr(self.config, "require_logprobs", False)
-                    and hasattr(generator, "generate_with_logprobs")
+                if getattr(self.config, "require_logprobs", False) and hasattr(
+                    generator, "generate_with_logprobs"
                 ):
-                    result = await generator.generate_with_logprobs(
-                        target, self.config.prompt
-                    )
+                    result = await generator.generate_with_logprobs(target, self.config.prompt)
                     resp = result.text
                 else:
                     resp = await generator.generate(target, self.config.prompt)

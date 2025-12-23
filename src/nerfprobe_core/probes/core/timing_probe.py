@@ -6,7 +6,6 @@ Ref: [2502.20589] LLMs Have Rhythm.
 
 import time
 from dataclasses import dataclass
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -21,6 +20,7 @@ from nerfprobe_core.probes.config import TimingProbeConfig
 @dataclass
 class TimingStats:
     """Timing analysis results."""
+
     ttft_ms: float
     mean_itl_ms: float
     chunk_count: int

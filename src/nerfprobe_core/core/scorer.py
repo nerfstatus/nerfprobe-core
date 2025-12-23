@@ -10,6 +10,7 @@ from nerfprobe_core.core.gateway import LLMGateway
 
 class CostEstimate(BaseModel):
     """Estimated cost for a probe execution."""
+
     input_tokens: int
     output_tokens: int
 

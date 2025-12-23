@@ -6,7 +6,6 @@ Requires: Simple factual questions with expected high confidence.
 """
 
 import time
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,

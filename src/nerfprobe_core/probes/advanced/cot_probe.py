@@ -5,7 +5,6 @@ Ref: [2504.04823]
 """
 
 import time
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,

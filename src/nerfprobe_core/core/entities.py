@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class ProviderType(str, enum.Enum):
     """Known provider types for categorization."""
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
@@ -21,6 +22,7 @@ class ProviderType(str, enum.Enum):
 
 class ProbeType(str, enum.Enum):
     """Categorization of probe types for analysis."""
+
     MATH = "math"
     INSTRUCTION = "instruction"
     TIMING = "timing"
@@ -41,6 +43,7 @@ class ProbeType(str, enum.Enum):
 
 class LogprobToken(BaseModel):
     """Token with probability information for paper-exact metrics."""
+
     token: str
     logprob: float  # Natural log probability
     top_logprobs: dict[str, float] | None = None  # Top-k alternatives
@@ -48,6 +51,7 @@ class LogprobToken(BaseModel):
 
 class LogprobResult(BaseModel):
     """Response with logprob data for KL-divergence, entropy calculations."""
+
     text: str
     tokens: list[LogprobToken] = Field(default_factory=list)
 
@@ -61,6 +65,7 @@ class LogprobResult(BaseModel):
 
 class ModelTarget(BaseModel):
     """Identifies a specific model to test."""
+
     provider_id: str
     model_name: str  # The API string (e.g., "claude-3-opus-20240229")
     cost_per_m_in: float = 0.0
@@ -74,6 +79,7 @@ class ModelTarget(BaseModel):
 
 class ProbeResult(BaseModel):
     """The outcome of a single probe execution."""
+
     probe_name: str
     probe_type: ProbeType
     target: ModelTarget

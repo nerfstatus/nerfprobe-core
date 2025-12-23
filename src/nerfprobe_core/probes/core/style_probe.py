@@ -5,7 +5,6 @@ Ref: [2403.06408] Perturbation Lens.
 """
 
 import time
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -56,7 +55,7 @@ class StyleProbe:
         # Generation Phase
         prompt = self.config.prompt_template.format(topic=self.config.topic)
         start = time.perf_counter()
-        
+
         try:
             response = await generator.generate(target, prompt)
             latency_ms = (time.perf_counter() - start) * 1000

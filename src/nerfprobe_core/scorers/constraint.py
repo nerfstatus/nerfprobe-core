@@ -9,7 +9,7 @@ class ConstraintScorer:
     Supports:
     - word_count: Check if word count is within [min, max]
     - negative: Check if response contains prohibited words
-    
+
     Ref: [2409.11055] Quantization trade-offs
     """
 
@@ -43,9 +43,7 @@ class ConstraintScorer:
         }
 
         if self.constraint_type == "negative":
-            violations = [
-                w for w in self.forbidden_words if w.lower() in response.lower()
-            ]
+            violations = [w for w in self.forbidden_words if w.lower() in response.lower()]
             metrics["violations_count"] = len(violations)
             metrics["violations"] = violations
 

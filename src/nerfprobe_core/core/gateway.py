@@ -1,6 +1,7 @@
 """Gateway protocols for LLM communication."""
 
-from typing import AsyncIterator, Protocol
+from collections.abc import AsyncIterator
+from typing import Protocol
 
 from nerfprobe_core.core.entities import LogprobResult, ModelTarget
 
@@ -15,9 +16,7 @@ class LLMGateway(Protocol):
         """Simple completion."""
         ...
 
-    async def generate_stream(
-        self, model: ModelTarget, prompt: str
-    ) -> AsyncIterator[str]:
+    def generate_stream(self, model: ModelTarget, prompt: str) -> AsyncIterator[str]:
         """Streaming completion for timing analysis."""
         ...
 

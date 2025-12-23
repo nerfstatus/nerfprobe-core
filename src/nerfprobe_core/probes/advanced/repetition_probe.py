@@ -5,7 +5,6 @@ Ref: [2403.06408] Perturbation Lens
 """
 
 import time
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,

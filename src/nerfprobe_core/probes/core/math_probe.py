@@ -5,7 +5,6 @@ Ref: [2504.04823] Quantization Hurts Reasoning.
 """
 
 import time
-from typing import Any
 
 from nerfprobe_core.core import (
     CostEstimate,
@@ -39,7 +38,7 @@ class MathProbe:
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
         start = time.perf_counter()
         response_text = ""
-        
+
         try:
             response_text = await generator.generate(target, self.config.prompt)
             latency_ms = (time.perf_counter() - start) * 1000

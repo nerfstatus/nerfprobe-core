@@ -10,9 +10,7 @@ class RepetitionScorer:
     Ref: [2403.06408] Perturbation Lens
     """
 
-    def __init__(
-        self, ngram_size: int = 4, max_repeats: int = 2, sliding_window_size: int = 50
-    ):
+    def __init__(self, ngram_size: int = 4, max_repeats: int = 2, sliding_window_size: int = 50):
         self.ngram_size = ngram_size
         self.max_repeats = max_repeats
         self.sliding_window_size = sliding_window_size
@@ -51,8 +49,7 @@ class RepetitionScorer:
         if len(tokens) < self.ngram_size:
             return []
         return [
-            tuple(tokens[i : i + self.ngram_size])
-            for i in range(len(tokens) - self.ngram_size + 1)
+            tuple(tokens[i : i + self.ngram_size]) for i in range(len(tokens) - self.ngram_size + 1)
         ]
 
     def _get_max_repetition_count(self, response: str) -> int:
