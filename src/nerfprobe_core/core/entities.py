@@ -7,6 +7,17 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class StrWithUsage(str):
+    """
+    String subclass that carries token usage metadata.
+    Allows backward compatibility with 'str' return types while passing telemetry.
+    """
+    def __new__(cls, content: str, usage: dict[str, int] | None = None):
+        obj = super().__new__(cls, content)
+        obj.usage = usage or {}
+        return obj
+
+
 class ProviderType(str, enum.Enum):
     """Known provider types for categorization."""
 
@@ -54,6 +65,8 @@ class LogprobResult(BaseModel):
 
     text: str
     tokens: list[LogprobToken] = Field(default_factory=list)
+    input_tokens: int | None = None
+    output_tokens: int | None = None
 
     @property
     def mean_logprob(self) -> float:
@@ -92,6 +105,13 @@ class ProbeResult(BaseModel):
     latency_ms: float
     ttft_ms: float | None = None
     mean_itl_ms: float | None = None
+
+    # Token Usage (Actuals)
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+
+    # Diagnosis
+    error_reason: str | None = None
 
     # Advanced metrics (PPL, TTR, etc)
     metric_scores: dict[str, float] = Field(default_factory=dict)

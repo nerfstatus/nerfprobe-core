@@ -1,6 +1,8 @@
 # NerfProbe Core
 
-Shared probe and scorer implementations for scientifically-grounded LLM degradation detection.
+**Scientifically-grounded LLM degradation detection.**
+
+`nerfprobe-core` provides the essential detection logic, scorers, and probe definitions used by the [NerfProbe CLI](https://pypi.org/project/nerfprobe/) and [NerfStatus](https://nerfstatus.com). It is designed for developers who need rigorous, research-backed instruments to measure model quality, consistency, and alignment.
 
 ## Installation
 
@@ -8,98 +10,92 @@ Shared probe and scorer implementations for scientifically-grounded LLM degradat
 pip install nerfprobe-core
 ```
 
-## Overview
+## Features
 
-**nerfprobe-core** provides the detection logic used by:
-- **[nerfprobe](https://pypi.org/project/nerfprobe/)** - CLI tool for developers
-- **[NerfStatus](https://nerfstatus.com)** - Monitoring service
+- **17 Research-Backed Probes**: Detection instruments grounded in specific academic papers on model collapse and quantization artifacts.
+- **3-Tier Architecture**: Organized into Core (Essential), Advanced (Structural), and Optional (Experimental) tiers.
+- **Universal Scoring**: Reusable scorers (JSON schema validation, TTR, Fact verification) independent of the probe execution.
+- **Type-Safe**: Fully typed with Python 3.11+, leveraging Pydantic for configuration and results.
 
 ## Probes
 
-14 probes across 3 tiers, each grounded in peer-reviewed research:
+### Core Tier (Essential Signals)
+| Probe | Detection Target | Paper |
+|-------|------------------|-------|
+| **MathProbe** | Arithmetic reasoning degradation | [2504.04823](https://arxiv.org/abs/2504.04823) |
+| **StyleProbe** | Vocabulary collapse (Type-Token Ratio) | [2403.06408](https://arxiv.org/abs/2403.06408) |
+| **TimingProbe** | Latency fingerprinting & TTFT degradation | [2502.20589](https://arxiv.org/abs/2502.20589) |
+| **CodeProbe** | Syntax collapse in generated code | [2512.08213](https://arxiv.org/abs/2512.08213) |
+| **FactProbe** | Factual recall and hallucination checks | N/A |
 
-### Core Tier
-| Probe | Detection | Research |
-|-------|-----------|----------|
-| MathProbe | Arithmetic reasoning degradation | [2504.04823](https://arxiv.org/abs/2504.04823) |
-| StyleProbe | Vocabulary collapse (TTR) | [2403.06408](https://arxiv.org/abs/2403.06408) |
-| TimingProbe | Latency fingerprinting | [2502.20589](https://arxiv.org/abs/2502.20589) |
-| CodeProbe | Syntax collapse | [2512.08213](https://arxiv.org/abs/2512.08213) |
+### Advanced Tier (Structural Integrity)
+| Probe | Detection Target | Paper |
+|-------|------------------|-------|
+| **JsonProbe** | JSON schema adherence & structure | [2402.16775](https://arxiv.org/abs/2402.16775) |
+| **ConsistencyProbe**| Fact permanence & self-contradiction | [2504.04823](https://arxiv.org/abs/2504.04823) |
+| **FingerprintProbe**| Underlying framework/model identity detection | [2407.15847](https://arxiv.org/abs/2407.15847) |
+| **ContextProbe** | Key-Value cache compression artifacts | [2512.12008](https://arxiv.org/abs/2512.12008) |
+| **RoutingProbe** | MoE routing path detection | [2406.18665](https://arxiv.org/abs/2406.18665) |
+| **RepetitionProbe** | Loop detection & phrase repetition | [2403.06408](https://arxiv.org/abs/2403.06408) |
+| **ConstraintProbe** | Negative constraint adherence | [2409.11055](https://arxiv.org/abs/2409.11055) |
+| **LogicProbe** | Reasoning step validity | [2504.04823](https://arxiv.org/abs/2504.04823) |
+| **ChainOfThoughtProbe** | CoT step integrity | [2504.04823](https://arxiv.org/abs/2504.04823) |
 
-### Advanced Tier
-| Probe | Detection | Research |
-|-------|-----------|----------|
-| FingerprintProbe | Framework detection | [2407.15847](https://arxiv.org/abs/2407.15847) |
-| ContextProbe | KV cache compression | [2512.12008](https://arxiv.org/abs/2512.12008) |
-| RoutingProbe | Model routing detection | [2406.18665](https://arxiv.org/abs/2406.18665) |
-| RepetitionProbe | Phrase looping | [2403.06408](https://arxiv.org/abs/2403.06408) |
-| ConstraintProbe | Instruction adherence | [2409.11055](https://arxiv.org/abs/2409.11055) |
-| LogicProbe | Reasoning drift | [2504.04823](https://arxiv.org/abs/2504.04823) |
-| ChainOfThoughtProbe | CoT integrity | [2504.04823](https://arxiv.org/abs/2504.04823) |
-
-### Optional Tier
-| Probe | Detection | Research |
-|-------|-----------|----------|
-| CalibrationProbe | Confidence calibration | [2511.07585](https://arxiv.org/abs/2511.07585) |
-| ZeroPrintProbe | Mode collapse | [2407.01235](https://arxiv.org/abs/2407.01235) |
-| MultilingualProbe | Cross-language asymmetry | [EMNLP.935](https://aclanthology.org/2023.findings-emnlp.935/) |
-
-## Scorers
-
-10 scoring implementations:
-- **MathScorer** - Expected answer matching
-- **TTRScorer** - Type-Token Ratio calculation
-- **CodeScorer** - Python syntax validation
-- **RepetitionScorer** - N-gram repetition detection
-- **ConstraintScorer** - Word count and forbidden word checks
-- **LogicScorer** - Answer + reasoning validation
-- **ChainOfThoughtScorer** - Step counting & circular detection
-- **CalibrationScorer** - Confidence extraction
-- **EntropyScorer** - Shannon entropy calculation
-- **MultilingualScorer** - Cross-language consistency
-
-## Model Registry
-
-Ships with 10 SOTA models (Dec 2025) with probe-relevant fields:
-- `context_window` - For ContextProbe
-- `knowledge_cutoff` - For TemporalProbe
-
-```python
-from nerfprobe_core import get_model_info, RESEARCH_PROMPT
-
-# Known model
-info = get_model_info("gpt-5.2")
-print(f"Context: {info.context_window:,}")
-
-# Unknown model - get research prompt
-prompt = RESEARCH_PROMPT.format(model_name="new-model", provider="provider")
-```
+### Optional Tier (Experimental)
+| Probe | Detection Target | Paper |
+|-------|------------------|-------|
+| **CalibrationProbe**| Confidence score calibration | [2511.07585](https://arxiv.org/abs/2511.07585) |
+| **ZeroPrintProbe** | Mode collapse via entropy measurement | [2407.01235](https://arxiv.org/abs/2407.01235) |
+| **MultilingualProbe**| Cross-language performance asymmetry | [EMNLP.935](https://aclanthology.org/2023.findings-emnlp.935/) |
 
 ## Usage
 
+### Basic Probe Execution
+
 ```python
+import asyncio
 from nerfprobe_core import ModelTarget
 from nerfprobe_core.probes import MathProbe
 from nerfprobe_core.probes.config import MathProbeConfig
 
-# Configure probe
+# 1. Configure the probe
 config = MathProbeConfig(
-    prompt="What is 15 * 12 + 8 * 9?",
-    expected_answer="252",
+    prompt="Calculate 15 * 12 + 8.",
+    expected_answer="188",
 )
 
-# Run probe
-target = ModelTarget(provider_id="openai", model_name="gpt-5.2")
-probe = MathProbe(config)
-result = await probe.run(target, gateway)
+# 2. Define the target
+target = ModelTarget(provider_id="openai", model_name="gpt-4o")
 
-print(result.summary())  # math_probe: PASS (1.00) in 234ms
+# 3. Instantiate and run (requires an LLM Gateway)
+probe = MathProbe(config)
+# result = await probe.run(target, gateway)
+
+# print(result.summary())
+# > math_probe: PASS (1.00) in 234ms
 ```
 
-## Dependencies
+### Using Scorers Directly
 
-- `pydantic>=2.0.0`
-- `pyyaml>=6.0.0`
+You can use the scoring logic without the full probe infrastructure:
+
+```python
+from nerfprobe_core.scorers import JsonScorer
+
+scorer = JsonScorer(strict=True)
+valid_json = '{"name": "NerfProbe"}'
+invalid_json = '```json{"name": "NerfProbe"}```'
+
+score, metadata = scorer.score(valid_json)
+print(f"Score: {score}") # 1.0
+
+score, metadata = scorer.score(invalid_json)
+print(f"Score: {score}") # 0.0 (Strict mode rejects markdown blocks)
+```
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to set up the development environment, run tests, and submit PRs.
 
 ## License
 

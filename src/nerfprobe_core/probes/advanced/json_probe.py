@@ -35,6 +35,15 @@ class JsonProbe(ProbeProtocol):
             response = await generator.generate(target, self.config.prompt)
             latency_ms = (time.perf_counter() - start) * 1000
         except Exception as e:
+            err_msg = str(e)
+            reason = "Error"
+            if "429" in err_msg:
+                reason = "Rate Limit"
+            elif "401" in err_msg:
+                reason = "Auth Error"
+            elif "500" in err_msg or "503" in err_msg:
+                reason = "Server Error"
+
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.INSTRUCTION,
@@ -43,6 +52,7 @@ class JsonProbe(ProbeProtocol):
                 score=0.0,
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {str(e)}",
+                error_reason=reason,
                 metadata={"error": str(e)}
             )
 
@@ -56,6 +66,19 @@ class JsonProbe(ProbeProtocol):
         
         passed = score == 1.0
         
+
+        # Extract usage
+        usage = getattr(response, "usage", {})
+        input_tokens = usage.get("prompt_tokens")
+        output_tokens = usage.get("completion_tokens")
+        
+        failure_reason = None
+        if not passed:
+             if scorer_metadata.get("schema_error"):
+                 failure_reason = "JSON Schema Mismatch"
+             else:
+                 failure_reason = "Invalid JSON"
+
         return ProbeResult(
             probe_name=self.config.name,
             probe_type=ProbeType.INSTRUCTION,
@@ -63,7 +86,10 @@ class JsonProbe(ProbeProtocol):
             passed=passed,
             score=score,
             latency_ms=latency_ms,
-            raw_response=response,
+            raw_response=str(response),
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            error_reason=failure_reason,
             metric_scores=metric_scores,
             metadata={
                 "research_ref": "[2402.16775]",

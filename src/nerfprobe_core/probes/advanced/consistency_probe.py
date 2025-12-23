@@ -52,6 +52,15 @@ class ConsistencyProbe(ProbeProtocol):
             
             latency_ms = (time.perf_counter() - start) * 1000
         except Exception as e:
+            err_msg = str(e)
+            reason = "Error"
+            if "429" in err_msg:
+                reason = "Rate Limit"
+            elif "401" in err_msg:
+                reason = "Auth Error"
+            elif "500" in err_msg or "503" in err_msg:
+                reason = "Server Error"
+
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.HALLUCINATION,
@@ -60,6 +69,7 @@ class ConsistencyProbe(ProbeProtocol):
                 score=0.0,
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {str(e)}",
+                error_reason=reason,
                 metadata={"error": str(e)}
             )
 
@@ -68,6 +78,21 @@ class ConsistencyProbe(ProbeProtocol):
         metrics = self._scorer.metrics(responses)
         passed = score == 1.0
         
+
+        # Calculate usage
+        u1 = getattr(resp1, "usage", {})
+        u2 = getattr(resp2, "usage", {})
+        input_tokens = u1.get("prompt_tokens", 0) + u2.get("prompt_tokens", 0)
+        output_tokens = u1.get("completion_tokens", 0) + u2.get("completion_tokens", 0)
+        
+        failure_reason = None
+        if not passed:
+             sim = metrics.get('similarity', 0.0)
+             if self.config.expect_match:
+                 failure_reason = f"Mismatch (Sim: {sim:.2f})"
+             else:
+                 failure_reason = f"Should mismatch (Sim: {sim:.2f})"
+
         return ProbeResult(
             probe_name=self.config.name,
             probe_type=ProbeType.HALLUCINATION,
@@ -76,6 +101,12 @@ class ConsistencyProbe(ProbeProtocol):
             score=score,
             latency_ms=latency_ms,
             raw_response=f"A1: {resp1} | A2: {resp2}",
+        
+            # Calculate usage
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            error_reason=failure_reason,
+            
             metric_scores={
                 "similarity": metrics["similarity"]
             },

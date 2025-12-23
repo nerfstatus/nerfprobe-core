@@ -131,9 +131,15 @@ class FingerprintProbe:
             )
 
         malformed_responses: list[str] = []
+        total_input_tokens = 0
+        total_output_tokens = 0
+        
         for query in self._config.malformed_queries:
             try:
                 res = await generator.generate(target, query)
+                u = getattr(res, "usage", {})
+                total_input_tokens += u.get("prompt_tokens", 0)
+                total_output_tokens += u.get("completion_tokens", 0)
                 malformed_responses.append(res)
             except Exception as e:
                 # Gateway crash is also a fingerprint
@@ -143,6 +149,9 @@ class FingerprintProbe:
         for prompt in self._config.banner_prompts:
             try:
                 res = await generator.generate(target, prompt)
+                u = getattr(res, "usage", {})
+                total_input_tokens += u.get("prompt_tokens", 0)
+                total_output_tokens += u.get("completion_tokens", 0)
                 banner_responses.append(res)
             except Exception as e:
                 banner_responses.append(f"ERROR: {e!s}")
@@ -158,6 +167,9 @@ class FingerprintProbe:
             passed=score.passed,
             latency_ms=latency_ms,
             raw_response=str(malformed_responses + banner_responses),
+            input_tokens=total_input_tokens,
+            output_tokens=total_output_tokens,
+            error_reason=score.reason if not score.passed else None,
             metric_scores={
                 "malformed_robustness": score.malformed_robustness,
                 "identity_privacy": score.identity_privacy,

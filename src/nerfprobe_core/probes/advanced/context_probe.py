@@ -153,6 +153,8 @@ class ContextProbe:
         total_tokens = len(filler_tokens)
 
         results: dict[float, bool] = {}
+        total_input_tokens = 0
+        total_output_tokens = 0
 
         for depth in self._config.needle_depths:
             needle = self._create_needle()
@@ -174,6 +176,12 @@ Answer:"""
 
             try:
                 response = await generator.generate(target, prompt)
+                
+                # Accumulate usage
+                usage = getattr(response, "usage", {})
+                total_input_tokens += usage.get("prompt_tokens", 0)
+                total_output_tokens += usage.get("completion_tokens", 0)
+                
                 passed = needle.expected_answer.lower() in response.lower()
                 results[depth] = passed
             except Exception:
@@ -190,6 +198,9 @@ Answer:"""
             passed=score.passed,
             latency_ms=latency_ms,
             raw_response="ContextProbe Execution",
+            input_tokens=total_input_tokens,
+            output_tokens=total_output_tokens,
+            error_reason=score.reason if not score.passed else None,
             metric_scores={f"depth_{k}": 1.0 if v else 0.0 for k, v in results.items()},
             metadata={
                 "research_ref": "[2512.12008]",

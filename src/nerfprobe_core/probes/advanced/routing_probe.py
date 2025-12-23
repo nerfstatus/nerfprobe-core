@@ -107,9 +107,17 @@ class RoutingProbe:
 
         # Run Easy Tasks
         easy_results: list[bool] = []
+        total_input_tokens = 0
+        total_output_tokens = 0
+        
         for prompt in self._config.easy_prompts:
             try:
                 response = await generator.generate(target, prompt)
+                
+                u = getattr(response, "usage", {})
+                total_input_tokens += u.get("prompt_tokens", 0)
+                total_output_tokens += u.get("completion_tokens", 0)
+
                 is_correct = self._evaluate_easy(prompt, response)
                 easy_results.append(is_correct)
             except Exception:
@@ -120,6 +128,11 @@ class RoutingProbe:
         for prompt in self._config.hard_prompts:
             try:
                 response = await generator.generate(target, prompt)
+
+                u = getattr(response, "usage", {})
+                total_input_tokens += u.get("prompt_tokens", 0)
+                total_output_tokens += u.get("completion_tokens", 0)
+
                 is_correct = self._evaluate_hard(prompt, response)
                 hard_results.append(is_correct)
             except Exception:
@@ -136,6 +149,9 @@ class RoutingProbe:
             passed=score.passed,
             latency_ms=latency_ms,
             raw_response=str(easy_results + hard_results),
+            input_tokens=total_input_tokens,
+            output_tokens=total_output_tokens,
+            error_reason=score.reason if not score.passed else None,
             metric_scores={
                 "easy_accuracy": score.easy_accuracy,
                 "hard_accuracy": score.hard_accuracy,

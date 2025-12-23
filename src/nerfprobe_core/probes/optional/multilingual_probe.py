@@ -68,6 +68,8 @@ class MultilingualProbe:
 
         start = time.perf_counter()
         responses: dict[str, str] = {}
+        total_input_tokens = 0
+        total_output_tokens = 0
 
         try:
             for lang in self.config.languages:
@@ -77,6 +79,11 @@ class MultilingualProbe:
                     prompt = prompt.format(target_language=lang_name)
 
                 resp = await generator.generate(target, prompt)
+                
+                u = getattr(resp, "usage", {})
+                total_input_tokens += u.get("prompt_tokens", 0)
+                total_output_tokens += u.get("completion_tokens", 0)
+                
                 responses[lang] = resp
 
             latency_ms = (time.perf_counter() - start) * 1000
@@ -104,6 +111,9 @@ class MultilingualProbe:
             score=score,
             latency_ms=latency_ms,
             raw_response=str(responses),
+            input_tokens=total_input_tokens,
+            output_tokens=total_output_tokens,
+            error_reason="Diff > Threshold" if not passed else None,
             metric_scores={"consistency": score},
             metadata={
                 "research_ref": "[2024.findings-emnlp.935]",

@@ -42,6 +42,8 @@ class ZeroPrintProbe:
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
         start_global = time.perf_counter()
         responses: list[str] = []
+        total_input_tokens = 0
+        total_output_tokens = 0
 
         # Iterative Generation
         for _ in range(self.config.iterations):
@@ -51,14 +53,22 @@ class ZeroPrintProbe:
                     generator, "generate_with_logprobs"
                 ):
                     result = await generator.generate_with_logprobs(target, self.config.prompt)
+                    total_input_tokens += getattr(result, "input_tokens", 0) or 0
+                    total_output_tokens += getattr(result, "output_tokens", 0) or 0
                     resp = result.text
                 else:
                     resp = await generator.generate(target, self.config.prompt)
+                    u = getattr(resp, "usage", {})
+                    total_input_tokens += u.get("prompt_tokens", 0)
+                    total_output_tokens += u.get("completion_tokens", 0)
                 responses.append(resp)
             except NotImplementedError:
                 # Fallback if gateway doesn't support logprobs
                 try:
                     resp = await generator.generate(target, self.config.prompt)
+                    u = getattr(resp, "usage", {})
+                    total_input_tokens += u.get("prompt_tokens", 0)
+                    total_output_tokens += u.get("completion_tokens", 0)
                     responses.append(resp)
                 except Exception as e:
                     responses.append(f"ERROR: {e!s}")
@@ -81,6 +91,9 @@ class ZeroPrintProbe:
             score=1.0 if passed else 0.0,
             latency_ms=latency_ms,
             raw_response=f"Sampled {len(responses)} times. Top: {list(responses)[:3]}...",
+            input_tokens=total_input_tokens,
+            output_tokens=total_output_tokens,
+            error_reason=f"Low Entropy ({entropy:.2f})" if not passed else None,
             metric_scores={
                 "entropy": entropy,
                 "unique_count": float(metrics["unique_count"]),

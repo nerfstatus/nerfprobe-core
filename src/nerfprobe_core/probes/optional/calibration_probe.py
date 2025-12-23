@@ -62,6 +62,15 @@ class CalibrationProbe:
             response_text = await generator.generate(target, self.config.prompt)
             latency_ms = (time.perf_counter() - start) * 1000
         except Exception as e:
+            err_msg = str(e)
+            reason = "Error"
+            if "429" in err_msg:
+                reason = "Rate Limit"
+            elif "401" in err_msg:
+                reason = "Auth Error"
+            elif "500" in err_msg or "503" in err_msg:
+                reason = "Server Error"
+
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.CALIBRATION,
@@ -70,12 +79,25 @@ class CalibrationProbe:
                 score=0.0,
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {e!s}",
+                error_reason=reason,
                 metadata={"error": str(e)},
             )
 
         score = self._scorer.score(response_text)
         metrics = self._scorer.metrics(response_text)
         passed = score == 1.0
+
+        # Extract usage
+        usage = getattr(response_text, "usage", {})
+        input_tokens = usage.get("prompt_tokens")
+        output_tokens = usage.get("completion_tokens")
+        
+        failure_reason = None
+        if not passed:
+             if not metrics["is_correct"]:
+                 failure_reason = "Answer incorrect"
+             else:
+                 failure_reason = f"Confidence {metrics['confidence']} too low"
 
         return ProbeResult(
             probe_name=self.config.name,
@@ -85,6 +107,9 @@ class CalibrationProbe:
             score=score,
             latency_ms=latency_ms,
             raw_response=response_text,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            error_reason=failure_reason,
             metric_scores={"confidence": metrics["confidence"]},
             metadata={
                 "research_ref": "[2511.07585]",

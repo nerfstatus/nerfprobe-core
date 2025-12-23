@@ -22,6 +22,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "pyyaml>=6.0.0",
     "types-pyyaml>=6.0.12.20250915",
+    "jsonschema>=4.0.0",
 ]
 
 [project.optional-dependencies]

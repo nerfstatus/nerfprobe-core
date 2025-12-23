@@ -47,6 +47,15 @@ class RepetitionProbe:
             response_text = await generator.generate(target, self.config.prompt)
             latency_ms = (time.perf_counter() - start) * 1000
         except Exception as e:
+            err_msg = str(e)
+            reason = "Error"
+            if "429" in err_msg:
+                reason = "Rate Limit"
+            elif "401" in err_msg:
+                reason = "Auth Error"
+            elif "500" in err_msg or "503" in err_msg:
+                reason = "Server Error"
+
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.REPETITION,
@@ -55,6 +64,7 @@ class RepetitionProbe:
                 score=0.0,
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {e!s}",
+                error_reason=reason,
                 metadata={"error": str(e)},
             )
 
@@ -86,6 +96,21 @@ class RepetitionProbe:
         }
         scorer_meta = metrics.get("_metadata", {})
 
+
+        # Extract usage
+        usage = getattr(response_text, "usage", {})
+        input_tokens = usage.get("prompt_tokens")
+        output_tokens = usage.get("completion_tokens")
+        
+        failure_reason = None
+        if not passed:
+             if max_repeats > self.config.max_repeats:
+                 failure_reason = f"Repeats {max_repeats} > {self.config.max_repeats}"
+             elif min_local_ttr < self.config.min_ngram_ttr:
+                 failure_reason = f"Low TTR {min_local_ttr:.2f}"
+             else:
+                 failure_reason = "Repetition check failed"
+
         return ProbeResult(
             probe_name=self.config.name,
             probe_type=ProbeType.REPETITION,
@@ -93,7 +118,10 @@ class RepetitionProbe:
             passed=passed,
             score=score,
             latency_ms=latency_ms,
-            raw_response=response_text,
+            raw_response=str(response_text),
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            error_reason=failure_reason,
             metric_scores=metric_scores,
             metadata={
                 "research_ref": "[2403.06408]",

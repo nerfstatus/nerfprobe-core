@@ -61,6 +61,15 @@ class ChainOfThoughtProbe:
             response_text = await generator.generate(target, self.config.prompt)
             latency_ms = (time.perf_counter() - start) * 1000
         except Exception as e:
+            err_msg = str(e)
+            reason = "Error"
+            if "429" in err_msg:
+                reason = "Rate Limit"
+            elif "401" in err_msg:
+                reason = "Auth Error"
+            elif "500" in err_msg or "503" in err_msg:
+                reason = "Server Error"
+
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.REASONING,
@@ -69,12 +78,28 @@ class ChainOfThoughtProbe:
                 score=0.0,
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {e!s}",
+                error_reason=reason,
                 metadata={"error": str(e)},
             )
 
         score = self._scorer.score(response_text)
         metrics = self._scorer.metrics(response_text)
         passed = score == 1.0
+
+
+        # Extract usage
+        usage = getattr(response_text, "usage", {})
+        input_tokens = usage.get("prompt_tokens")
+        output_tokens = usage.get("completion_tokens")
+        
+        failure_reason = None
+        if not passed:
+             if metrics["is_circular"]:
+                 failure_reason = "Circular reasoning detected"
+             elif metrics["step_count"] < self.config.min_steps:
+                 failure_reason = f"Too few steps ({metrics['step_count']} < {self.config.min_steps})"
+             else:
+                 failure_reason = "CoT Reasoning Failed"
 
         return ProbeResult(
             probe_name=self.config.name,
@@ -83,7 +108,10 @@ class ChainOfThoughtProbe:
             passed=passed,
             score=score,
             latency_ms=latency_ms,
-            raw_response=response_text,
+            raw_response=str(response_text),
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            error_reason=failure_reason,
             metric_scores={
                 "step_count": float(metrics["step_count"]),
                 "is_circular": 1.0 if metrics["is_circular"] else 0.0,

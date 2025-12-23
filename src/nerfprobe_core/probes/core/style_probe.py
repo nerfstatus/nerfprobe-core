@@ -60,6 +60,15 @@ class StyleProbe:
             response = await generator.generate(target, prompt)
             latency_ms = (time.perf_counter() - start) * 1000
         except Exception as e:
+            err_msg = str(e)
+            reason = "Error"
+            if "429" in err_msg:
+                reason = "Rate Limit"
+            elif "401" in err_msg:
+                reason = "Auth Error"
+            elif "500" in err_msg or "503" in err_msg:
+                reason = "Server Error"
+
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.STYLE,
@@ -68,6 +77,7 @@ class StyleProbe:
                 score=0.0,
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {e!s}",
+                error_reason=reason,
                 metadata={"error": str(e)},
             )
 
@@ -75,6 +85,16 @@ class StyleProbe:
         score = self._scorer.score(response)
         metrics = self._scorer.metrics(response)
         passed = metrics.get("min_local_ttr", score) >= self.config.min_ttr
+
+        # Extract usage
+        usage = getattr(response, "usage", {})
+        input_tokens = usage.get("prompt_tokens")
+        output_tokens = usage.get("completion_tokens")
+        
+        failure_reason = None
+        if not passed:
+             ttr = metrics.get('min_local_ttr', 0.0)
+             failure_reason = f"Low TTR: {ttr:.2f} (Min {self.config.min_ttr})"
 
         return ProbeResult(
             probe_name=self.config.name,
@@ -84,6 +104,9 @@ class StyleProbe:
             score=score,
             latency_ms=latency_ms,
             raw_response=response,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            error_reason=failure_reason,
             metric_scores=metrics,
             metadata={
                 "research_ref": "[2403.06408]",
