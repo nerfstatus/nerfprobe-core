@@ -3,9 +3,11 @@
 # Advanced tier probes
 from nerfprobe_core.probes.advanced import (
     ChainOfThoughtProbe,
+    ConsistencyProbe,
     ConstraintProbe,
     ContextProbe,
     FingerprintProbe,
+    JsonProbe,
     LogicProbe,
     RepetitionProbe,
     RoutingProbe,
@@ -33,11 +35,14 @@ from nerfprobe_core.probes.config import (
     StyleProbeConfig,
     TimingProbeConfig,
     ZeroPrintProbeConfig,
+    JsonProbeConfig,
+    ConsistencyProbeConfig,
 )
 
 # Core tier probes
 from nerfprobe_core.probes.core import (
     CodeProbe,
+    FactProbe,
     MathProbe,
     StyleProbe,
     TimingProbe,
@@ -51,7 +56,7 @@ from nerfprobe_core.probes.optional import (
 )
 
 # Tier definitions for CLI --tier flag
-CORE_PROBES = ["math", "style", "timing", "code"]
+CORE_PROBES = ["math", "style", "timing", "code", "fact"]
 ADVANCED_PROBES = [
     "fingerprint",
     "context",
@@ -60,6 +65,8 @@ ADVANCED_PROBES = [
     "constraint",
     "logic",
     "cot",
+    "json",
+    "consistency",
 ]
 OPTIONAL_PROBES = ["calibration", "zeroprint", "multilingual"]
 
@@ -72,6 +79,7 @@ PROBE_REGISTRY = {
     "style": StyleProbe,
     "timing": TimingProbe,
     "code": CodeProbe,
+    "fact": FactProbe,
     # Advanced
     "fingerprint": FingerprintProbe,
     "context": ContextProbe,
@@ -80,6 +88,8 @@ PROBE_REGISTRY = {
     "constraint": ConstraintProbe,
     "logic": LogicProbe,
     "cot": ChainOfThoughtProbe,
+    "json": JsonProbe,
+    "consistency": ConsistencyProbe,
     # Optional
     "calibration": CalibrationProbe,
     "zeroprint": ZeroPrintProbe,
@@ -120,6 +130,11 @@ __all__ = [
     "CalibrationProbe",
     "ZeroPrintProbe",
     "MultilingualProbe",
+    "JsonProbe",
+    "ConsistencyProbe",
+    "FactProbe",
+    "JsonProbeConfig",
+    "ConsistencyProbeConfig",
     # Tier lists
     "CORE_PROBES",
     "ADVANCED_PROBES",

@@ -2,6 +2,7 @@
 
 from datetime import date
 
+from typing import Any
 from pydantic import BaseModel, Field
 
 
@@ -266,3 +267,25 @@ class TemporalConsistencyConfig(BaseProbeConfig):
 
     cutoff_date: date
     strict_event_check: bool = True
+
+
+class JsonProbeConfig(BaseProbeConfig):
+    """
+    Validates JSON output structure and schema adherence.
+    """
+
+    prompt: str
+    schema_definition: dict[str, Any] | None = None
+    strict: bool = True
+
+
+class ConsistencyProbeConfig(BaseProbeConfig):
+    """
+    Checks semantic consistency across multiple turns or re-asks.
+    """
+
+    prompt1: str
+    prompt2: str
+    consistency_type: str = "permanence"
+    expect_match: bool = True
+
