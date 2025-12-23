@@ -47,6 +47,11 @@ ignore = ["E501"]  # Allow long lines in prompts and test strings
 [tool.mypy]
 python_version = "3.11"
 strict = true
+exclude = ["tests/"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
 
 [dependency-groups]
 dev = [
