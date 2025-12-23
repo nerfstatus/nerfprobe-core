@@ -1,8 +1,8 @@
 """Probe configuration models."""
 
 from datetime import date
-
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -57,9 +57,7 @@ class CodeProbeConfig(BaseProbeConfig):
     Ref: [2512.08213] Package Hallucinations.
     """
 
-    prompt: str = (
-        "Write a Python function to solve FizzBuzz. Return ONLY the code in a markdown block."
-    )
+    prompt: str = "Write a Python function to solve FizzBuzz. Return ONLY the code in a markdown block."
     language: str = "python"
 
 
@@ -134,10 +132,7 @@ class RepetitionProbeConfig(BaseProbeConfig):
     Ref: [2403.06408] Perturbation Lens.
     """
 
-    prompt: str = (
-        "Write a detailed history of the Roman Empire. Focus on political reforms. "
-        "Length: 300 words."
-    )
+    prompt: str = "Write a detailed history of the Roman Empire. Focus on political reforms. Length: 300 words."
     ngram_size: int = 4
     max_repeats: int = 2
     min_ngram_ttr: float = 0.55
@@ -151,9 +146,7 @@ class ConstraintProbeConfig(BaseProbeConfig):
     """
 
     type: str = "word_count"
-    prompt: str = (
-        "Write exactly 100 words about the ocean. Do not write less than 80 or more than 120."
-    )
+    prompt: str = "Write exactly 100 words about the ocean. Do not write less than 80 or more than 120."
     min_words: int | None = None
     max_words: int | None = None
     forbidden_words: list[str] = Field(default_factory=list)
@@ -197,9 +190,7 @@ class CalibrationProbeConfig(BaseProbeConfig):
     Requires: logprobs support.
     """
 
-    prompt: str = (
-        "What is the capital of France? Answer format: 'Answer: [City]. Confidence: [0.0-1.0].'"
-    )
+    prompt: str = "What is the capital of France? Answer format: 'Answer: [City]. Confidence: [0.0-1.0].'"
     expected_answer: str = "Paris"
     min_confidence: float = 0.9
     max_confidence_for_wrong: float = 0.2
@@ -212,10 +203,7 @@ class ZeroPrintProbeConfig(BaseProbeConfig):
     Requires: logprobs support.
     """
 
-    prompt: str = (
-        "Pick a random animal from this list: Cat, Dog, Bird, Fish, Bear. "
-        "Return ONLY the animal name."
-    )
+    prompt: str = "Pick a random animal from this list: Cat, Dog, Bird, Fish, Bear. Return ONLY the animal name."
     iterations: int = 20
     min_entropy: float = 1.0
     require_logprobs: bool = True
@@ -288,4 +276,3 @@ class ConsistencyProbeConfig(BaseProbeConfig):
     prompt2: str
     consistency_type: str = "permanence"
     expect_match: bool = True
-

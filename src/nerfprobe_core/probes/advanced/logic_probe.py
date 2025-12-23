@@ -39,10 +39,7 @@ class LogicProbe:
         return CostEstimate(input_tokens=150, output_tokens=300)
 
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
-        if (
-            self.config.max_tokens_per_run > 0
-            and self.estimated_cost.total_tokens > self.config.max_tokens_per_run
-        ):
+        if self.config.max_tokens_per_run > 0 and self.estimated_cost.total_tokens > self.config.max_tokens_per_run:
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.REASONING,
@@ -86,20 +83,19 @@ class LogicProbe:
         metrics = self._scorer.metrics(response_text)
         passed = score == 1.0
 
-
         # Extract usage
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             if not metrics.get("has_answer"):
-                 failure_reason = "No final answer found"
-             elif metrics.get("missing_steps"):
-                 failure_reason = f"Missing steps: {len(metrics['missing_steps'])}"
-             else:
-                 failure_reason = "Reasoning incorrect"
+            if not metrics.get("has_answer"):
+                failure_reason = "No final answer found"
+            elif metrics.get("missing_steps"):
+                failure_reason = f"Missing steps: {len(metrics['missing_steps'])}"
+            else:
+                failure_reason = "Reasoning incorrect"
 
         return ProbeResult(
             probe_name=self.config.name,

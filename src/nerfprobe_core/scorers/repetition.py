@@ -48,9 +48,7 @@ class RepetitionScorer:
         """Extract N-grams from token list."""
         if len(tokens) < self.ngram_size:
             return []
-        return [
-            tuple(tokens[i : i + self.ngram_size]) for i in range(len(tokens) - self.ngram_size + 1)
-        ]
+        return [tuple(tokens[i : i + self.ngram_size]) for i in range(len(tokens) - self.ngram_size + 1)]
 
     def _get_max_repetition_count(self, response: str) -> int:
         """Get count of most repeated N-gram."""

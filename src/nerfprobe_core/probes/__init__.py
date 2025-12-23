@@ -21,11 +21,13 @@ from nerfprobe_core.probes.config import (
     CodeProbeConfig,
     # Utility
     ComparisonProbeConfig,
+    ConsistencyProbeConfig,
     ConstraintProbeConfig,
     ContextProbeConfig,
     FactProbeConfig,
     # Advanced tier
     FingerprintProbeConfig,
+    JsonProbeConfig,
     LogicPuzzleProbeConfig,
     # Core tier
     MathProbeConfig,
@@ -35,8 +37,6 @@ from nerfprobe_core.probes.config import (
     StyleProbeConfig,
     TimingProbeConfig,
     ZeroPrintProbeConfig,
-    JsonProbeConfig,
-    ConsistencyProbeConfig,
 )
 
 # Core tier probes

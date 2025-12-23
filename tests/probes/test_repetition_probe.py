@@ -1,7 +1,9 @@
 """Tests for RepetitionProbe."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
+
 from nerfprobe_core import ModelTarget
 from nerfprobe_core.probes.advanced import RepetitionProbe
 from nerfprobe_core.probes.config import RepetitionProbeConfig

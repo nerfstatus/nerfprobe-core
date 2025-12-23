@@ -1,22 +1,20 @@
 """Unit tests for probe configs."""
 
-import pytest
 from nerfprobe_core.probes.config import (
-    BaseProbeConfig,
+    CalibrationProbeConfig,
+    ChainOfThoughtProbeConfig,
+    CodeProbeConfig,
+    ConstraintProbeConfig,
+    ContextProbeConfig,
+    FingerprintProbeConfig,
+    LogicPuzzleProbeConfig,
     MathProbeConfig,
+    MultilingualProbeConfig,
+    RepetitionProbeConfig,
+    RoutingProbeConfig,
     StyleProbeConfig,
     TimingProbeConfig,
-    CodeProbeConfig,
-    FingerprintProbeConfig,
-    ContextProbeConfig,
-    RoutingProbeConfig,
-    RepetitionProbeConfig,
-    ConstraintProbeConfig,
-    LogicPuzzleProbeConfig,
-    ChainOfThoughtProbeConfig,
-    CalibrationProbeConfig,
     ZeroPrintProbeConfig,
-    MultilingualProbeConfig,
 )
 
 

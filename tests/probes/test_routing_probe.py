@@ -1,7 +1,9 @@
 """Tests for RoutingProbe."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
+
 from nerfprobe_core import ModelTarget, ProbeType
 from nerfprobe_core.probes.advanced import RoutingProbe
 from nerfprobe_core.probes.config import RoutingProbeConfig
@@ -26,6 +28,7 @@ class TestRoutingProbe:
             if "France" in p:
                 return "The capital of France is Paris"
             return "response"
+
         mock_gateway.generate.side_effect = mock_generate
         config = RoutingProbeConfig()
         probe = RoutingProbe(config)

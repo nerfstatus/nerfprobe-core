@@ -1,10 +1,12 @@
 """Tests for MathProbe."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
+
 from nerfprobe_core import ModelTarget, ProbeType
-from nerfprobe_core.probes.core import MathProbe
 from nerfprobe_core.probes.config import MathProbeConfig
+from nerfprobe_core.probes.core import MathProbe
 
 
 @pytest.fixture

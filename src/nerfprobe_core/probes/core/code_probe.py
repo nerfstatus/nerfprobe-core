@@ -69,32 +69,24 @@ class CodeProbe:
         passed = score == 1.0
 
         # Unpack metrics
-        metric_scores = {
-            k: v
-            for k, v in metrics.items()
-            if not k.startswith("_") and isinstance(v, (int, float))
-        }
+        metric_scores = {k: v for k, v in metrics.items() if not k.startswith("_") and isinstance(v, (int, float))}
 
         # Collect non-numeric metrics for metadata
-        extra_meta = {
-            k: v
-            for k, v in metrics.items()
-            if not k.startswith("_") and not isinstance(v, (int, float))
-        }
+        extra_meta = {k: v for k, v in metrics.items() if not k.startswith("_") and not isinstance(v, (int, float))}
         scorer_meta = metrics.get("_metadata", {})
-        
+
         # Extract usage
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             if scorer_meta.get("valid_ast") is False:
-                  err = scorer_meta.get("syntax_error", "Unknown")
-                  failure_reason = f"Syntax Error: {err}"[:30] + "..."
-             else:
-                  failure_reason = "Logic/Import Code Failed"
+            if scorer_meta.get("valid_ast") is False:
+                err = scorer_meta.get("syntax_error", "Unknown")
+                failure_reason = f"Syntax Error: {err}"[:30] + "..."
+            else:
+                failure_reason = "Logic/Import Code Failed"
 
         return ProbeResult(
             probe_name=self.config.name,

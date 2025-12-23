@@ -1,7 +1,9 @@
 """Tests for FingerprintProbe."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
+
 from nerfprobe_core import ModelTarget, ProbeType
 from nerfprobe_core.probes.advanced import FingerprintProbe
 from nerfprobe_core.probes.config import FingerprintProbeConfig

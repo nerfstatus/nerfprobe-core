@@ -41,10 +41,7 @@ class ConstraintProbe:
         return CostEstimate(input_tokens=50, output_tokens=150)
 
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
-        if (
-            self.config.max_tokens_per_run > 0
-            and self.estimated_cost.total_tokens > self.config.max_tokens_per_run
-        ):
+        if self.config.max_tokens_per_run > 0 and self.estimated_cost.total_tokens > self.config.max_tokens_per_run:
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.CONSTRAINT,
@@ -88,16 +85,15 @@ class ConstraintProbe:
         metrics = self._scorer.metrics(response_text)
         passed = score == 1.0
 
-
         # Extract usage
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             v_count = metrics.get("violations_count", 0)
-             failure_reason = f"Violations: {int(v_count)}"
+            v_count = metrics.get("violations_count", 0)
+            failure_reason = f"Violations: {int(v_count)}"
 
         return ProbeResult(
             probe_name=self.config.name,

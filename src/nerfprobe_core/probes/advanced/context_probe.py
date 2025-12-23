@@ -146,7 +146,10 @@ class ContextProbe:
                 passed=False,
                 latency_ms=0.0,
                 raw_response="SKIPPED: Cost Exceeds Budget",
-                metadata={"status": "SKIPPED", "cost": self.estimated_cost.total_tokens},
+                metadata={
+                    "status": "SKIPPED",
+                    "cost": self.estimated_cost.total_tokens,
+                },
             )
 
         filler_tokens = self._generate_haystack(self._config.context_length)
@@ -163,9 +166,7 @@ class ContextProbe:
             insert_idx = int(total_tokens * depth)
 
             context_tokens = (
-                filler_tokens[:insert_idx]
-                + [needle.premise_1, needle.premise_2]
-                + filler_tokens[insert_idx:]
+                filler_tokens[:insert_idx] + [needle.premise_1, needle.premise_2] + filler_tokens[insert_idx:]
             )
 
             prompt = f"""Context:
@@ -176,12 +177,12 @@ Answer:"""
 
             try:
                 response = await generator.generate(target, prompt)
-                
+
                 # Accumulate usage
                 usage = getattr(response, "usage", {})
                 total_input_tokens += usage.get("prompt_tokens", 0)
                 total_output_tokens += usage.get("completion_tokens", 0)
-                
+
                 passed = needle.expected_answer.lower() in response.lower()
                 results[depth] = passed
             except Exception:

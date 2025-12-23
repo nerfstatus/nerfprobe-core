@@ -12,7 +12,10 @@ class StrWithUsage(str):
     String subclass that carries token usage metadata.
     Allows backward compatibility with 'str' return types while passing telemetry.
     """
-    def __new__(cls, content: str, usage: dict[str, int] | None = None):
+
+    usage: dict[str, int]
+
+    def __new__(cls, content: str, usage: dict[str, int] | None = None) -> "StrWithUsage":
         obj = super().__new__(cls, content)
         obj.usage = usage or {}
         return obj

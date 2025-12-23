@@ -51,10 +51,7 @@ class MultilingualProbe:
         return CostEstimate(input_tokens=50 * num_langs, output_tokens=50 * num_langs)
 
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
-        if (
-            self.config.max_tokens_per_run > 0
-            and self.estimated_cost.total_tokens > self.config.max_tokens_per_run
-        ):
+        if self.config.max_tokens_per_run > 0 and self.estimated_cost.total_tokens > self.config.max_tokens_per_run:
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.MULTILINGUAL,
@@ -79,11 +76,11 @@ class MultilingualProbe:
                     prompt = prompt.format(target_language=lang_name)
 
                 resp = await generator.generate(target, prompt)
-                
+
                 u = getattr(resp, "usage", {})
                 total_input_tokens += u.get("prompt_tokens", 0)
                 total_output_tokens += u.get("completion_tokens", 0)
-                
+
                 responses[lang] = resp
 
             latency_ms = (time.perf_counter() - start) * 1000

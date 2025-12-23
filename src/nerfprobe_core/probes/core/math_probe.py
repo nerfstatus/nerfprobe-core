@@ -52,7 +52,7 @@ class MathProbe:
                 reason = "Auth Error"
             elif "500" in err_msg or "503" in err_msg:
                 reason = "Server Error"
-            
+
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.MATH,
@@ -73,15 +73,15 @@ class MathProbe:
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         # Populate failure reason for UI
         failure_reason = None
         if not passed:
-             # truncate response if too long
-             got = str(response_text).strip()[:10]
-             if len(str(response_text).strip()) > 10:
-                 got += "..."
-             failure_reason = f"Got '{got}' (Exp {self.config.expected_answer})"
+            # truncate response if too long
+            got = str(response_text).strip()[:10]
+            if len(str(response_text).strip()) > 10:
+                got += "..."
+            failure_reason = f"Got '{got}' (Exp {self.config.expected_answer})"
 
         return ProbeResult(
             probe_name=self.config.name,

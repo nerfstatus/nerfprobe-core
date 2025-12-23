@@ -76,40 +76,29 @@ class RepetitionProbe:
         min_local_ttr = metrics.get("min_local_ttr", 1.0)
         max_repeats = int(metrics.get("max_repeats", 0))
 
-        passed = (max_repeats <= self.config.max_repeats) and (
-            min_local_ttr >= self.config.min_ngram_ttr
-        )
+        passed = (max_repeats <= self.config.max_repeats) and (min_local_ttr >= self.config.min_ngram_ttr)
         score = 1.0 if passed else 0.0
 
         # Extract numeric metrics for metric_scores
-        metric_scores = {
-            k: v
-            for k, v in metrics.items()
-            if not k.startswith("_") and isinstance(v, (int, float))
-        }
+        metric_scores = {k: v for k, v in metrics.items() if not k.startswith("_") and isinstance(v, (int, float))}
 
         # Non-numeric for metadata
-        extra_meta = {
-            k: v
-            for k, v in metrics.items()
-            if not k.startswith("_") and not isinstance(v, (int, float))
-        }
+        extra_meta = {k: v for k, v in metrics.items() if not k.startswith("_") and not isinstance(v, (int, float))}
         scorer_meta = metrics.get("_metadata", {})
-
 
         # Extract usage
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             if max_repeats > self.config.max_repeats:
-                 failure_reason = f"Repeats {max_repeats} > {self.config.max_repeats}"
-             elif min_local_ttr < self.config.min_ngram_ttr:
-                 failure_reason = f"Low TTR {min_local_ttr:.2f}"
-             else:
-                 failure_reason = "Repetition check failed"
+            if max_repeats > self.config.max_repeats:
+                failure_reason = f"Repeats {max_repeats} > {self.config.max_repeats}"
+            elif min_local_ttr < self.config.min_ngram_ttr:
+                failure_reason = f"Low TTR {min_local_ttr:.2f}"
+            else:
+                failure_reason = "Repetition check failed"
 
         return ProbeResult(
             probe_name=self.config.name,

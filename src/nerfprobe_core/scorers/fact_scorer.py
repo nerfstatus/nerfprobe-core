@@ -1,10 +1,13 @@
 from typing import Any
+
 from nerfprobe_core.core.scorer import ScorerProtocol
+
 
 class FactScorer(ScorerProtocol):
     """
     Checks if the expected factual text is present in the response (case-insensitive).
     """
+
     def __init__(self, expected_text: str):
         self.expected_text = expected_text
 
@@ -17,8 +20,5 @@ class FactScorer(ScorerProtocol):
         val = 0.0
         if isinstance(response, str):
             val = self.score(response)
-            
-        return {
-            "expected": self.expected_text,
-            "passed": val
-        }
+
+        return {"expected": self.expected_text, "passed": val}

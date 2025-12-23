@@ -49,9 +49,7 @@ class ZeroPrintProbe:
         for _ in range(self.config.iterations):
             try:
                 # Try logprobs if required and supported
-                if getattr(self.config, "require_logprobs", False) and hasattr(
-                    generator, "generate_with_logprobs"
-                ):
+                if getattr(self.config, "require_logprobs", False) and hasattr(generator, "generate_with_logprobs"):
                     result = await generator.generate_with_logprobs(target, self.config.prompt)
                     total_input_tokens += getattr(result, "input_tokens", 0) or 0
                     total_output_tokens += getattr(result, "output_tokens", 0) or 0

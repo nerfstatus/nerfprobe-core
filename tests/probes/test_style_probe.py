@@ -1,10 +1,12 @@
 """Tests for StyleProbe."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
+
 from nerfprobe_core import ModelTarget, ProbeType
-from nerfprobe_core.probes.core import StyleProbe
 from nerfprobe_core.probes.config import StyleProbeConfig
+from nerfprobe_core.probes.core import StyleProbe
 
 
 @pytest.fixture

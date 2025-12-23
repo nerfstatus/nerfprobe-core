@@ -39,10 +39,7 @@ class ChainOfThoughtProbe:
         return CostEstimate(input_tokens=100, output_tokens=400)
 
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
-        if (
-            self.config.max_tokens_per_run > 0
-            and self.estimated_cost.total_tokens > self.config.max_tokens_per_run
-        ):
+        if self.config.max_tokens_per_run > 0 and self.estimated_cost.total_tokens > self.config.max_tokens_per_run:
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.REASONING,
@@ -86,20 +83,19 @@ class ChainOfThoughtProbe:
         metrics = self._scorer.metrics(response_text)
         passed = score == 1.0
 
-
         # Extract usage
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             if metrics["is_circular"]:
-                 failure_reason = "Circular reasoning detected"
-             elif metrics["step_count"] < self.config.min_steps:
-                 failure_reason = f"Too few steps ({metrics['step_count']} < {self.config.min_steps})"
-             else:
-                 failure_reason = "CoT Reasoning Failed"
+            if metrics["is_circular"]:
+                failure_reason = "Circular reasoning detected"
+            elif metrics["step_count"] < self.config.min_steps:
+                failure_reason = f"Too few steps ({metrics['step_count']} < {self.config.min_steps})"
+            else:
+                failure_reason = "CoT Reasoning Failed"
 
         return ProbeResult(
             probe_name=self.config.name,

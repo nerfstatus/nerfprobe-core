@@ -1,10 +1,12 @@
 """Tests for CodeProbe."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
+
 from nerfprobe_core import ModelTarget, ProbeType
-from nerfprobe_core.probes.core import CodeProbe
 from nerfprobe_core.probes.config import CodeProbeConfig
+from nerfprobe_core.probes.core import CodeProbe
 
 
 @pytest.fixture

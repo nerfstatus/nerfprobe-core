@@ -1,24 +1,21 @@
-from typing import Any
 import time
 
 from nerfprobe_core.core.entities import ModelTarget, ProbeResult, ProbeType
-from nerfprobe_core.core.scorer import ProbeProtocol, CostEstimate
 from nerfprobe_core.core.gateway import LLMGateway
+from nerfprobe_core.core.scorer import CostEstimate, ProbeProtocol
 from nerfprobe_core.probes.config import JsonProbeConfig
 from nerfprobe_core.scorers.json_scorer import JsonScorer
+
 
 class JsonProbe(ProbeProtocol):
     """
     Validates compliance with JSON schema constraints.
     Formerly InstructionProbe.
     """
-    
+
     def __init__(self, config: JsonProbeConfig):
         self._config = config
-        self._scorer = JsonScorer(
-            schema=config.schema_definition, 
-            strict=config.strict
-        )
+        self._scorer = JsonScorer(schema=config.schema_definition, strict=config.strict)
 
     @property
     def config(self) -> JsonProbeConfig:
@@ -30,7 +27,7 @@ class JsonProbe(ProbeProtocol):
 
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
         start = time.perf_counter()
-        
+
         try:
             response = await generator.generate(target, self.config.prompt)
             latency_ms = (time.perf_counter() - start) * 1000
@@ -53,31 +50,30 @@ class JsonProbe(ProbeProtocol):
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {str(e)}",
                 error_reason=reason,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
         # Scoring Phase
         score = self._scorer.score(response)
         raw_metrics = self._scorer.metrics(response)
-        
+
         # Split into numeric metrics and metadata
         metric_scores = {k: v for k, v in raw_metrics.items() if not k.startswith("_")}
         scorer_metadata = raw_metrics.get("_metadata", {})
-        
+
         passed = score == 1.0
-        
 
         # Extract usage
         usage = getattr(response, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             if scorer_metadata.get("schema_error"):
-                 failure_reason = "JSON Schema Mismatch"
-             else:
-                 failure_reason = "Invalid JSON"
+            if scorer_metadata.get("schema_error"):
+                failure_reason = "JSON Schema Mismatch"
+            else:
+                failure_reason = "Invalid JSON"
 
         return ProbeResult(
             probe_name=self.config.name,
@@ -96,6 +92,6 @@ class JsonProbe(ProbeProtocol):
                 "strict_mode": self.config.strict,
                 "extraction_used": metric_scores.get("extraction_used", 0.0) == 1.0,
                 "config": self.config.model_dump(),
-                "scorer_details": scorer_metadata
-            }
+                "scorer_details": scorer_metadata,
+            },
         )

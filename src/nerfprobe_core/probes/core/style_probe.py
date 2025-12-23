@@ -37,10 +37,7 @@ class StyleProbe:
 
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
         # Enforce Token Budget
-        if (
-            self.config.max_tokens_per_run > 0
-            and self.estimated_cost.total_tokens > self.config.max_tokens_per_run
-        ):
+        if self.config.max_tokens_per_run > 0 and self.estimated_cost.total_tokens > self.config.max_tokens_per_run:
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.STYLE,
@@ -90,11 +87,11 @@ class StyleProbe:
         usage = getattr(response, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             ttr = metrics.get('min_local_ttr', 0.0)
-             failure_reason = f"Low TTR: {ttr:.2f} (Min {self.config.min_ttr})"
+            ttr = metrics.get("min_local_ttr", 0.0)
+            failure_reason = f"Low TTR: {ttr:.2f} (Min {self.config.min_ttr})"
 
         return ProbeResult(
             probe_name=self.config.name,

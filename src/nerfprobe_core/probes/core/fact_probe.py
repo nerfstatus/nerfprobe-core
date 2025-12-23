@@ -1,17 +1,17 @@
-from typing import Any
 import time
 
 from nerfprobe_core.core.entities import ModelTarget, ProbeResult, ProbeType
-from nerfprobe_core.core.scorer import ProbeProtocol, CostEstimate
 from nerfprobe_core.core.gateway import LLMGateway
+from nerfprobe_core.core.scorer import CostEstimate, ProbeProtocol
 from nerfprobe_core.probes.config import FactProbeConfig
 from nerfprobe_core.scorers.fact_scorer import FactScorer
+
 
 class FactProbe(ProbeProtocol):
     """
     Checks if model expected fact is in the output.
     """
-    
+
     def __init__(self, config: FactProbeConfig):
         self._config = config
         self._scorer = FactScorer(expected_text=config.expected_text)
@@ -49,7 +49,7 @@ class FactProbe(ProbeProtocol):
                 latency_ms=(time.perf_counter() - start) * 1000,
                 raw_response=f"ERROR: {str(e)}",
                 error_reason=reason,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
         score = self._scorer.score(response_text)
@@ -60,12 +60,12 @@ class FactProbe(ProbeProtocol):
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             # truncate expected if too long
-             exp = str(self.config.expected_text)[:15]
-             failure_reason = f"Missing fact: '{exp}...'"
+            # truncate expected if too long
+            exp = str(self.config.expected_text)[:15]
+            failure_reason = f"Missing fact: '{exp}...'"
 
         return ProbeResult(
             probe_name=self.config.name,
@@ -82,6 +82,6 @@ class FactProbe(ProbeProtocol):
             metadata={
                 "research_ref": "[2512.08213]",
                 "config": self.config.model_dump(),
-                "scorer_details": metrics
-            }
+                "scorer_details": metrics,
+            },
         )

@@ -1,13 +1,11 @@
 """Unit tests for core entities."""
 
-import pytest
 from nerfprobe_core.core.entities import (
-    ProbeResult,
-    ModelTarget,
-    ProbeType,
-    LogprobToken,
     LogprobResult,
-    ProviderType,
+    LogprobToken,
+    ModelTarget,
+    ProbeResult,
+    ProbeType,
 )
 
 

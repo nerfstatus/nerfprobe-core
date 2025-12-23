@@ -35,9 +35,7 @@ class RoutingScorer:
     Ref: [2406.18665] RouteLLM
     """
 
-    def score(
-        self, easy_results: list[bool], hard_results: list[bool], threshold: float
-    ) -> RoutingScore:
+    def score(self, easy_results: list[bool], hard_results: list[bool], threshold: float) -> RoutingScore:
         """
         Evaluate performance gap between easy and hard tasks.
         Large gap suggests routing to weaker models on complex tasks.
@@ -102,18 +100,21 @@ class RoutingProbe:
                 passed=False,
                 latency_ms=0.0,
                 raw_response="SKIPPED: Cost Exceeds Budget",
-                metadata={"status": "SKIPPED", "cost": self.estimated_cost.total_tokens},
+                metadata={
+                    "status": "SKIPPED",
+                    "cost": self.estimated_cost.total_tokens,
+                },
             )
 
         # Run Easy Tasks
         easy_results: list[bool] = []
         total_input_tokens = 0
         total_output_tokens = 0
-        
+
         for prompt in self._config.easy_prompts:
             try:
                 response = await generator.generate(target, prompt)
-                
+
                 u = getattr(response, "usage", {})
                 total_input_tokens += u.get("prompt_tokens", 0)
                 total_output_tokens += u.get("completion_tokens", 0)

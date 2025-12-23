@@ -40,11 +40,7 @@ class LogicScorer:
 
         missing_steps = [step for step in self.required_reasoning if step not in response_lower]
 
-        reasoning_score = (
-            1.0 - (len(missing_steps) / len(self.required_reasoning))
-            if self.required_reasoning
-            else 1.0
-        )
+        reasoning_score = 1.0 - (len(missing_steps) / len(self.required_reasoning)) if self.required_reasoning else 1.0
 
         passed = has_answer and len(missing_steps) == 0
 

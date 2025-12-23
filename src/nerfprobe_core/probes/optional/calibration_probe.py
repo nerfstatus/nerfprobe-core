@@ -40,10 +40,7 @@ class CalibrationProbe:
         return CostEstimate(input_tokens=50, output_tokens=50)
 
     async def run(self, target: ModelTarget, generator: LLMGateway) -> ProbeResult:
-        if (
-            self.config.max_tokens_per_run > 0
-            and self.estimated_cost.total_tokens > self.config.max_tokens_per_run
-        ):
+        if self.config.max_tokens_per_run > 0 and self.estimated_cost.total_tokens > self.config.max_tokens_per_run:
             return ProbeResult(
                 probe_name=self.config.name,
                 probe_type=ProbeType.CALIBRATION,
@@ -91,13 +88,13 @@ class CalibrationProbe:
         usage = getattr(response_text, "usage", {})
         input_tokens = usage.get("prompt_tokens")
         output_tokens = usage.get("completion_tokens")
-        
+
         failure_reason = None
         if not passed:
-             if not metrics["is_correct"]:
-                 failure_reason = "Answer incorrect"
-             else:
-                 failure_reason = f"Confidence {metrics['confidence']} too low"
+            if not metrics["is_correct"]:
+                failure_reason = "Answer incorrect"
+            else:
+                failure_reason = f"Confidence {metrics['confidence']} too low"
 
         return ProbeResult(
             probe_name=self.config.name,
